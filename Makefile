@@ -23,8 +23,7 @@ COMMENT=	Open source Geographical Information System (GIS)
 LICENSE=	GPLv2+
 LICENSE_FILE=	${WRKSRC}/GPL.TXT
 
-BUILD_DEPENDS=	${PYTHON_PKGNAMEPREFIX}numpy>=1.2:math/py-numpy \
-		${PYTHON_PKGNAMEPREFIX}sqlite3>0:databases/py-sqlite3
+BUILD_DEPENDS=	${PYTHON_PKGNAMEPREFIX}numpy>=1.2:math/py-numpy
 LIB_DEPENDS=	libgdal.so:graphics/gdal \
 		libpng.so:graphics/png \
 		libproj.so:graphics/proj \
@@ -35,7 +34,7 @@ LIB_DEPENDS=	libgdal.so:graphics/gdal \
 RUN_DEPENDS=	bash:shells/bash
 
 USES=		fortran gettext gmake iconv jpeg perl5 pkgconfig python:2 \
-		readline shebangfix tk sqlite
+		readline shebangfix tk
 SHEBANG_LANG=	nviz
 nviz_OLD_CMD=	nviz
 nviz_CMD=	${PREFIX}/${GRASS_INST_DIR}/bin/nviz
@@ -44,7 +43,7 @@ PATCH_TK_SCRIPTS=lib/init/init.sh
 USE_XORG=	sm ice x11 xext xi xmu xrender xt
 USE_GL=		gl glu
 USE_GNOME=	cairo
-USE_WX=		2.8
+USE_WX=		3.0
 WX_COMPS=	wx:build python:run
 USE_GCC=	yes
 GNU_CONFIGURE=	yes
@@ -65,10 +64,12 @@ CONFIGURE_ARGS=	--with-includes=${LOCALBASE}/include \
 		--with-curses \
 		--enable-largefile \
 		--with-python=${PYTHON_CMD}-config \
-		--with-wxwidgets=${WX_CONFIG}
+		--with-wxwidgets=${WX_CONFIG} \
+		--with-proj-share=${LOCALBASE}/share/proj
 ALL_TARGET=	default
 USE_LDCONFIG=	${PREFIX}/${GRASS_INST_DIR}/lib
 MAKE_JOBS_UNSAFE=yes
+MAKE_ENV+=		TARGET="${CONFIGURE_TARGET}"
 
 PLIST_SUB=	GRASS_INST_DIR="${GRASS_INST_DIR}" \
 		VERSION="${PORTVERSION}" \
@@ -79,7 +80,7 @@ BROKEN_sparc64=		Does not configure on sparc64
 OPTIONS_DEFINE=		ATLAS FFMPEG MOTIF
 OPTIONS_MULTI=		DB
 OPTIONS_MULTI_DB=	MYSQL ODBC PGSQL SQLITE
-OPTIONS_DEFAULT=	PGSQL
+OPTIONS_DEFAULT=	SQLITE
 OPTIONS_SUB=		yes
 
 ATLAS_DESC=		Use ATLAS for BLAS and LAPACK
@@ -106,7 +107,7 @@ PGSQL_USES=		pgsql
 PGSQL_CONFIGURE_ON=	--with-postgres
 SQLITE_USES=		sqlite
 SQLITE_CONFIGURE_ON=	--with-sqlite
-#SQLITE_RUN_DEPENDS=	${PYTHON_PKGNAMEPREFIX}sqlite3>0:databases/py-sqlite3
+SQLITE_RUN_DEPENDS=	${PYTHON_PKGNAMEPREFIX}sqlite3>0:databases/py-sqlite3
 
 .include <bsd.port.options.mk>
 
@@ -114,7 +115,6 @@ SQLITE_CONFIGURE_ON=	--with-sqlite
 GRASS_INST_DIR=	${PORTNAME}-${PORTVERSION}
 .endif
 
-MANDIRS=	${PREFIX}/%%GRASS_INST_DIR%%/docs/man/man1/
 MANDIRS=	${PREFIX}/grass-7.2.0RC1/docs/man/man1
 
 post-patch:
@@ -125,27 +125,24 @@ post-patch:
 	@${REINPLACE_CMD} -e \
 		's|make -C|$$(MAKE) -C| ; \
 		 /^BINDIR/s|=.*|=	$${DESTDIR}$${UNIX_BIN}| ; \
-		 /test /s| $${INST_DIR}| $${DESTDIR}$${INST_DIR}|g ; \
-		 /tar /s| $${INST_DIR}| $${DESTDIR}$${INST_DIR}|g ; \
-		 /chmod /s| $${INST_DIR}| $${DESTDIR}$${INST_DIR}|g ; \
-		 /tar /s| $${INST_DIR}| $${DESTDIR}$${INST_DIR}|g ; \
-		 s|> $${INST_DIR}|> $${DESTDIR}$${INST_DIR}|' ${WRKSRC}/Makefile
+		 /test /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
+		 /tar /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
+		 /chmod /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
+		 /tar /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
+		 /rm /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
+		 /$$(MAKE) /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
+		 /^$$(INST_DIR)\//s|$$(INST_DIR)|$${DESTDIR}$${INST_DIR}|g ; \
+		 s|> $$(INST_DIR)|> $${DESTDIR}$${INST_DIR}|' ${WRKSRC}/include/Make/Install.make
 	@${REINPLACE_CMD} -e \
 		's|= python|= ${PYTHON_CMD:T}|' ${WRKSRC}/include/Make/Platform.make.in
-	@${REINPLACE_CMD} -e 's|STAGEDIR|${STAGEDIR}|g' -e \
-		's|LOCALBASE|${LOCALBASE}|g' \
-		${WRKSRC}/configure \
-		${WRKSRC}/include/Make/Install.make
+	@${REINPLACE_CMD} -e \
+		"s|'make'|'gmake'|g" ${WRKSRC}/scripts/g.extension/g.extension.py
+	@${REINPLACE_CMD} -e \
+		's|$$(ARCH)|$$(TARGET)|g' ${WRKSRC}/include/Make/Grass.make
 
 post-install:
-	@${REINPLACE_CMD} -i '' -e 's|${STAGEDIR}||g' -e \
-		's|${LOCALBASE}||g' \
-		${STAGEDIR}${LOCALBASE}/${PORTNAME}-${PORTVERSION}/include/Make/Platform.make \
-		${STAGEDIR}${LOCALBASE}/${PORTNAME}-${PORTVERSION}/include/Make/Install.make \
-		${STAGEDIR}${LOCALBASE}/${PORTNAME}-${PORTVERSION}/include/Make/Grass.make \
-		${STAGEDIR}${LOCALBASE}/${PORTNAME}-${PORTVERSION}/config.status \
-		${STAGEDIR}${LOCALBASE}/${PORTNAME}-${PORTVERSION}/demolocation/.grassrc72 \
-		${STAGEDIR}${LOCALBASE}/bin/${PORTNAME}72
+# XXX
+	@${RM} -rf ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/demolocation/PERMANENT/.tmp/
 
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/bin/*
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/driver/db/*

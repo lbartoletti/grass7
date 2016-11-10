@@ -46,7 +46,28 @@
  STARTUP = $(INST_DIR)/etc/$(GRASS_NAME).py
  else
 -STARTUP = $(UNIX_BIN)/$(GRASS_NAME)
-+STARTUP = STAGEDIR/LOCALBASE/bin/$(GRASS_NAME)
++STARTUP = ${DESTDIR}/$(UNIX_BIN)/$(GRASS_NAME)
  endif
  
  FONTCAP = etc/fontcap
+@@ -96,7 +96,8 @@ TMPGISRC = demolocation/.grassrc$(GRASS_
+ PLATMAKE = include/Make/Platform.make
+ GRASSMAKE = include/Make/Grass.make
+ 
+-real-install: | $(INST_DIR) $(UNIX_BIN)
++real-install: 
++	test -d $(INST_DIR) || $(MAKE_DIR_CMD) $(INST_DIR)
+ 	-tar cBCf $(GISBASE) - . | tar xBCf $(INST_DIR) - 2>/dev/null
+ 	-rm $(INST_DIR)/$(GRASS_NAME).tmp
+ 	$(MAKE) $(STARTUP)
+@@ -121,8 +105,8 @@ ifneq ($(findstring darwin,$(ARCH)),)
+ 	@/bin/ln -sfh "$(INST_DIR)/docs/html" /Library/Documentation/Help/GRASS-$(GRASS_VERSION_MAJOR).$(GRASS_VERSION_MINOR)
+ endif
+ 
+-$(INST_DIR) $(UNIX_BIN):
+-	$(MAKE_DIR_CMD) $@
++#$(INST_DIR) $(UNIX_BIN):
++#	$(MAKE_DIR_CMD) $@
+ 
+ $(STARTUP): $(ARCH_DISTDIR)/$(GRASS_NAME).tmp
+ 	sed -e 's#'@GISBASE@'#'$(INST_DIR)'#g' \
