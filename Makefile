@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	grass
-PORTVERSION=	7.2.0RC1
+PORTVERSION=	7.2.0
 CATEGORIES=	databases geography
 MASTER_SITES=	http://grass.osgeo.org/%SUBDIR%/ \
 		http://grass.cict.fr/%SUBDIR%/ \
@@ -31,7 +31,8 @@ LIB_DEPENDS=	libgdal.so:graphics/gdal \
 		libfftw3.so:math/fftw3 \
 		libfontconfig.so:x11-fonts/fontconfig \
 		libfreetype.so:print/freetype2
-RUN_DEPENDS=	bash:shells/bash
+RUN_DEPENDS=	bash:shells/bash \
+				${PYTHON_PKGNAMEPREFIX}wrapt>=1.10:devel/py-wrapt
 
 USES=		fortran gettext gmake iconv jpeg perl5 pkgconfig python:2 \
 		readline shebangfix tk
@@ -115,7 +116,7 @@ SQLITE_RUN_DEPENDS=	${PYTHON_PKGNAMEPREFIX}sqlite3>0:databases/py-sqlite3
 GRASS_INST_DIR=	${PORTNAME}-${PORTVERSION}
 .endif
 
-MANDIRS=	${PREFIX}/grass-7.2.0RC1/docs/man/man1
+MANDIRS=	${PREFIX}/grass-7.2.0/docs/man/man1
 
 post-patch:
 	@${REINPLACE_CMD} -e \
