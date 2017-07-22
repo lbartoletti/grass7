@@ -31,16 +31,9 @@ LIB_DEPENDS=	libgdal.so:graphics/gdal \
 		libfftw3.so:math/fftw3 \
 		libfontconfig.so:x11-fonts/fontconfig \
 		libfreetype.so:print/freetype2
-RUN_DEPENDS=	bash:shells/bash \
-				${PYTHON_PKGNAMEPREFIX}wrapt>=1.10:devel/py-wrapt
 
-USES=		fortran gettext gmake iconv jpeg perl5 pkgconfig python:2 \
-		readline shebangfix tk
-SHEBANG_LANG=	nviz
-nviz_OLD_CMD=	nviz
-nviz_CMD=	${PREFIX}/${GRASS_INST_DIR}/bin/nviz
-PATCH_TCL_SCRIPTS=lib/init/init.sh
-PATCH_TK_SCRIPTS=lib/init/init.sh
+USES=	fortran gettext gmake iconv jpeg pkgconfig python:2 \
+		readline
 USE_XORG=	sm ice x11 xext xi xmu xrender xt
 USE_GL=		gl glu
 USE_GNOME=	cairo
@@ -48,7 +41,6 @@ USE_WX=		3.0
 WX_COMPS=	wx:build python:run
 USE_GCC=	yes
 GNU_CONFIGURE=	yes
-CONFIGURE_ENV=	PERL="${PERL}"
 CONFIGURE_ARGS=	--with-includes=${LOCALBASE}/include \
 		--with-libs=${LOCALBASE}/lib \
 		--with-tcltk-includes="${TCL_INCLUDEDIR} ${TK_INCLUDEDIR}" \
@@ -67,7 +59,7 @@ CONFIGURE_ARGS=	--with-includes=${LOCALBASE}/include \
 		--with-python=${PYTHON_CMD}-config \
 		--with-wxwidgets=${WX_CONFIG} \
 		--with-proj-share=${LOCALBASE}/share/proj
-ALL_TARGET=	default
+ALL_TARGET=default
 USE_LDCONFIG=	${PREFIX}/${GRASS_INST_DIR}/lib
 MAKE_JOBS_UNSAFE=yes
 MAKE_ENV+=		TARGET="${CONFIGURE_TARGET}"
@@ -76,7 +68,7 @@ PLIST_SUB=	GRASS_INST_DIR="${GRASS_INST_DIR}" \
 		VERSION="${PORTVERSION}" \
 		VER="${PORTVERSION:R:C/\.//}"
 
-BROKEN_sparc64=		Does not configure on sparc64
+#BROKEN_sparc64=		Does not configure on sparc64
 
 OPTIONS_DEFINE=		ATLAS FFMPEG MOTIF
 OPTIONS_MULTI=		DB
@@ -119,32 +111,20 @@ GRASS_INST_DIR=	${PORTNAME}-${PORTVERSION}
 MANDIRS=	${PREFIX}/grass-7.2.0/docs/man/man1
 
 post-patch:
-	@${REINPLACE_CMD} -e \
-		's|-lblas|${BLASLIB}|g ; \
-		 s|-llapack|${LAPACKLIB}|g ; \
-		 s|g2c|f2c|g' ${WRKSRC}/configure
-	@${REINPLACE_CMD} -e \
-		's|make -C|$$(MAKE) -C| ; \
-		 /^BINDIR/s|=.*|=	$${DESTDIR}$${UNIX_BIN}| ; \
-		 /test /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
-		 /tar /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
-		 /chmod /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
-		 /tar /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
-		 /rm /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
-		 /$$(MAKE) /s| $$(INST_DIR)| $${DESTDIR}$${INST_DIR}|g ; \
-		 /^$$(INST_DIR)\//s|$$(INST_DIR)|$${DESTDIR}$${INST_DIR}|g ; \
-		 s|> $$(INST_DIR)|> $${DESTDIR}$${INST_DIR}|' ${WRKSRC}/include/Make/Install.make
-	@${REINPLACE_CMD} -e \
-		's|= python|= ${PYTHON_CMD:T}|' ${WRKSRC}/include/Make/Platform.make.in
-	@${REINPLACE_CMD} -e \
-		"s|'make'|'gmake'|g" ${WRKSRC}/scripts/g.extension/g.extension.py
+#	@${REINPLACE_CMD} -e \
+#		's|= python|= ${PYTHON_CMD:T}|' ${WRKSRC}/include/Make/Platform.make.in
+#	@${REINPLACE_CMD} -e \
+#		"s|'make'|'gmake'|g" ${WRKSRC}/scripts/g.extension/g.extension.py
 	@${REINPLACE_CMD} -e \
 		's|$$(ARCH)|$$(TARGET)|g' ${WRKSRC}/include/Make/Grass.make
 
 post-install:
-# XXX
-	@${RM} -rf ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/demolocation/PERMANENT/.tmp/
+	# Manual install
+	@${MKDIR} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}
+	@${CP} -r ${WRKSRC}/dist.*/* ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/
 
+	@${RM} -rf ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/demolocation/PERMANENT/.tmp/
+#
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/bin/*
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/driver/db/*
 .for i in clean_temp current_time_s_ms echo i.find lock run
@@ -153,8 +133,8 @@ post-install:
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/etc/lister/*
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/lib/libgrass_*.so
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/tools/g.echo
-
-post-install-MOTIF-on:
-	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/bin/xganim
+#
+#post-install-MOTIF-on:
+#	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/bin/xganim
 
 .include <bsd.port.mk>

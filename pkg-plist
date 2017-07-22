@@ -539,6 +539,7 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/docs/html/d_legend_vect.png
 %%GRASS_INST_DIR%%/docs/html/d_legend_vect_subheadings.png
 %%GRASS_INST_DIR%%/docs/html/d_polar_aspect.png
+%%GRASS_INST_DIR%%/docs/html/d_rast_arrow_wind.png
 %%GRASS_INST_DIR%%/docs/html/d_rast_num_zoom.png
 %%GRASS_INST_DIR%%/docs/html/d_rhumbline.png
 %%GRASS_INST_DIR%%/docs/html/d_to_rast_3D_example.jpg
@@ -931,6 +932,7 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/docs/html/m.nviz.script.html
 %%GRASS_INST_DIR%%/docs/html/m.proj.html
 %%GRASS_INST_DIR%%/docs/html/m.transform.html
+%%GRASS_INST_DIR%%/docs/html/m_measure_distance.png
 %%GRASS_INST_DIR%%/docs/html/manual_gallery.html
 %%GRASS_INST_DIR%%/docs/html/mapswipe_tsunami.jpg
 %%GRASS_INST_DIR%%/docs/html/misc.html
@@ -1163,6 +1165,8 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/docs/html/r3flow_flowlines.png
 %%GRASS_INST_DIR%%/docs/html/r3flow_flowlines_color.png
 %%GRASS_INST_DIR%%/docs/html/r_buffer_road.png
+%%GRASS_INST_DIR%%/docs/html/r_contour_using_levels.png
+%%GRASS_INST_DIR%%/docs/html/r_fill_dir.png
 %%GRASS_INST_DIR%%/docs/html/r_flow_accumulation.png
 %%GRASS_INST_DIR%%/docs/html/r_flow_length.png
 %%GRASS_INST_DIR%%/docs/html/r_flow_line.png
@@ -1202,6 +1206,7 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/docs/html/r_surf_fractal_simple.png
 %%GRASS_INST_DIR%%/docs/html/r_surf_gauss_hist.png
 %%GRASS_INST_DIR%%/docs/html/r_surf_random_hist.png
+%%GRASS_INST_DIR%%/docs/html/r_texture_directions_example.png
 %%GRASS_INST_DIR%%/docs/html/r_thin_network.png
 %%GRASS_INST_DIR%%/docs/html/r_thin_vectorized.png
 %%GRASS_INST_DIR%%/docs/html/r_water_outlet.png
@@ -1482,6 +1487,7 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/docs/html/v_net_alloc_from_centers.png
 %%GRASS_INST_DIR%%/docs/html/v_net_alloc_time.png
 %%GRASS_INST_DIR%%/docs/html/v_net_alloc_to_centers.png
+%%GRASS_INST_DIR%%/docs/html/v_net_visibility.png
 %%GRASS_INST_DIR%%/docs/html/v_overlay_area_lines.png
 %%GRASS_INST_DIR%%/docs/html/v_overlay_census_wake2000.png
 %%GRASS_INST_DIR%%/docs/html/v_overlay_op_and.png
@@ -1492,6 +1498,11 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/docs/html/v_overlay_poly_1_2_a_o_n_x.png
 %%GRASS_INST_DIR%%/docs/html/v_overlay_urban_census2000.png
 %%GRASS_INST_DIR%%/docs/html/v_overlay_urbanarea.png
+%%GRASS_INST_DIR%%/docs/html/v_qcount_1.png
+%%GRASS_INST_DIR%%/docs/html/v_qcount_2.png
+%%GRASS_INST_DIR%%/docs/html/v_qcount_3.png
+%%GRASS_INST_DIR%%/docs/html/v_qcount_4.png
+%%GRASS_INST_DIR%%/docs/html/v_qcount_5.png
 %%GRASS_INST_DIR%%/docs/html/v_segment_spaced_percent_points.jpg
 %%GRASS_INST_DIR%%/docs/html/v_segment_spaced_points.jpg
 %%GRASS_INST_DIR%%/docs/html/v_segment_spaced_right_points.jpg
@@ -2738,6 +2749,7 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/fonts/romant.hmp
 %%GRASS_INST_DIR%%/fonts/scriptc.hmp
 %%GRASS_INST_DIR%%/fonts/scripts.hmp
+%%GRASS_INST_DIR%%/grass%%VER%%.tmp
 %%GRASS_INST_DIR%%/gui/icons/flags/af.png
 %%GRASS_INST_DIR%%/gui/icons/flags/am.png
 %%GRASS_INST_DIR%%/gui/icons/flags/ar.png
@@ -3198,6 +3210,8 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/gui/wxpython/gui_core/vselect.pyc
 %%GRASS_INST_DIR%%/gui/wxpython/gui_core/widgets.py
 %%GRASS_INST_DIR%%/gui/wxpython/gui_core/widgets.pyc
+%%GRASS_INST_DIR%%/gui/wxpython/gui_core/wrap.py
+%%GRASS_INST_DIR%%/gui/wxpython/gui_core/wrap.pyc
 %%GRASS_INST_DIR%%/gui/wxpython/gui_core/wxlibplot.py
 %%GRASS_INST_DIR%%/gui/wxpython/gui_core/wxlibplot.pyc
 %%GRASS_INST_DIR%%/gui/wxpython/iclass/__init__.py
@@ -3941,6 +3955,7 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/tools/mkhtml.py
 %%GRASS_INST_DIR%%/translation_status.json
 %%GRASS_INST_DIR%%/translators.csv
+libdata/ldconfig/grass
 @dir %%GRASS_INST_DIR%%/demolocation/PERMANENT/cats
 @dir %%GRASS_INST_DIR%%/demolocation/PERMANENT/cell
 @dir %%GRASS_INST_DIR%%/demolocation/PERMANENT/cell_misc
