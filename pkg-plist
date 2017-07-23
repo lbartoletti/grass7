@@ -1,3 +1,4 @@
+/you/have/to/check/what/makeplist/gives/you
 bin/grass%%VER%%
 %%GRASS_INST_DIR%%/AUTHORS
 %%GRASS_INST_DIR%%/CHANGES
@@ -2749,7 +2750,6 @@ bin/grass%%VER%%
 %%GRASS_INST_DIR%%/fonts/romant.hmp
 %%GRASS_INST_DIR%%/fonts/scriptc.hmp
 %%GRASS_INST_DIR%%/fonts/scripts.hmp
-%%GRASS_INST_DIR%%/grass%%VER%%.tmp
 %%GRASS_INST_DIR%%/gui/icons/flags/af.png
 %%GRASS_INST_DIR%%/gui/icons/flags/am.png
 %%GRASS_INST_DIR%%/gui/icons/flags/ar.png

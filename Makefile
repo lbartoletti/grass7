@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	grass
-PORTVERSION=	7.2.0
+PORTVERSION=	7.2.1
 CATEGORIES=	databases geography
 MASTER_SITES=	http://grass.osgeo.org/%SUBDIR%/ \
 		http://grass.cict.fr/%SUBDIR%/ \
@@ -17,7 +17,7 @@ MASTER_SITES=	http://grass.osgeo.org/%SUBDIR%/ \
 		http://wgrass.media.osaka-cu.ac.jp/grassh/%SUBDIR%/
 MASTER_SITE_SUBDIR=	grass72/source
 
-MAINTAINER=	ports@FreeBSD.org
+MAINTAINER=	lbartoletti@tuxfamily.org
 COMMENT=	Open source Geographical Information System (GIS)
 
 LICENSE=	GPLv2+
@@ -110,6 +110,10 @@ GRASS_INST_DIR=	${PORTNAME}-${PORTVERSION}
 
 MANDIRS=	${PREFIX}/grass-7.2.0/docs/man/man1
 
+post-extract:
+	${MKDIR} ${WRKSRC}/etc
+	${TOUCH} ${WRKSRC}/etc/fontcap
+
 post-patch:
 #	@${REINPLACE_CMD} -e \
 #		's|= python|= ${PYTHON_CMD:T}|' ${WRKSRC}/include/Make/Platform.make.in
@@ -120,14 +124,13 @@ post-patch:
 
 post-install:
 	# Manual install
-	@${MKDIR} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}
 	@${CP} -r ${WRKSRC}/dist.*/* ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/
 
 	@${RM} -rf ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/demolocation/PERMANENT/.tmp/
 #
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/bin/*
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/driver/db/*
-.for i in clean_temp current_time_s_ms echo i.find lock run
+.for i in fontcap clean_temp current_time_s_ms echo i.find lock run
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/etc/${i}
 .endfor
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/etc/lister/*
