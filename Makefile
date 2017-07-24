@@ -23,7 +23,9 @@ COMMENT=	Open source Geographical Information System (GIS)
 LICENSE=	GPLv2+
 LICENSE_FILE=	${WRKSRC}/GPL.TXT
 
-BUILD_DEPENDS=	${PYTHON_PKGNAMEPREFIX}numpy>=1.2:math/py-numpy
+BUILD_DEPENDS=	${PYTHON_PKGNAMEPREFIX}numpy>=1.2:math/py-numpy \
+		${LOCALBASE}/bin/python:lang/python
+RUN_DEPENDS=	${LOCALBASE}/bin/python:lang/python
 LIB_DEPENDS=	libgdal.so:graphics/gdal \
 		libpng.so:graphics/png \
 		libproj.so:graphics/proj \
@@ -33,7 +35,14 @@ LIB_DEPENDS=	libgdal.so:graphics/gdal \
 		libfreetype.so:print/freetype2
 
 USES=	fortran gettext gmake iconv jpeg pkgconfig python:2 \
-		readline
+		readline shebangfix
+SHEBANG_FILES=	gui/*/*/*.py \
+gui/scripts/*.py \
+lib/init/grass.py \
+tools/g.html2man/g.html2man.py \
+scripts/*/*.py \
+temporal/*/*.py
+
 USE_XORG=	sm ice x11 xext xi xmu xrender xt
 USE_GL=		gl glu
 USE_GNOME=	cairo
@@ -123,14 +132,15 @@ post-patch:
 		's|$$(ARCH)|$$(TARGET)|g' ${WRKSRC}/include/Make/Grass.make
 
 post-install:
+#	@${MKDIR} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}
 	# Manual install
-	@${CP} -r ${WRKSRC}/dist.*/* ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/
+#	@${CP} -r ${WRKSRC}/dist.*/* ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/
 
 	@${RM} -rf ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/demolocation/PERMANENT/.tmp/
 #
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/bin/*
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/driver/db/*
-.for i in fontcap clean_temp current_time_s_ms echo i.find lock run
+.for i in clean_temp current_time_s_ms echo i.find lock run
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/etc/${i}
 .endfor
 	@${STRIP_CMD} ${STAGEDIR}${PREFIX}/${GRASS_INST_DIR}/etc/lister/*
