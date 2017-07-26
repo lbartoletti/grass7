@@ -15,8 +15,9 @@ MASTER_SITES=	http://grass.osgeo.org/%SUBDIR%/ \
 		http://wgbis.ces.iisc.ernet.in/grass/%SUBDIR%/ \
 		http://wgrass.media.osaka-cu.ac.jp/grassh/%SUBDIR%/
 MASTER_SITE_SUBDIR=	grass72/source
+PKGNAMESUFFIX=	7
 
-MAINTAINER=	ports@FreeBSD.org
+MAINTAINER=	lbartoletti@tuxfamily.org
 COMMENT=	Open source Geographical Information System (GIS)
 
 LICENSE=	GPLv2+
@@ -29,7 +30,8 @@ LIB_DEPENDS=	libgdal.so:graphics/gdal \
 		libtiff.so:graphics/tiff \
 		libfftw3.so:math/fftw3 \
 		libfontconfig.so:x11-fonts/fontconfig \
-		libfreetype.so:print/freetype2
+		libfreetype.so:print/freetype2 \
+		libgeos.so:graphics/geos
 RUN_DEPENDS=	bash:shells/bash
 
 USES=		fortran gettext gmake iconv jpeg perl5 pkgconfig python:2 \
@@ -58,7 +60,12 @@ CONFIGURE_ARGS=	--with-includes=${LOCALBASE}/include \
 		--with-readline \
 		--enable-largefile \
 		--with-wxwidgets=${WX_CONFIG} \
-		--with-proj-share=${LOCALBASE}/share/proj
+		--with-proj-share=${LOCALBASE}/share/proj \
+		--with-geos=${LOCALBASE}/bin/geos-config \
+		--with-gdal=${LOCALBASE}/bin/gdal-config \
+		--with-pthread=yes \
+		--with-openmp
+
 ALL_TARGET=	default
 USE_LDCONFIG=	${PREFIX}/${GRASS_INST_DIR}/lib
 MAKE_JOBS_UNSAFE=yes
@@ -70,23 +77,23 @@ PLIST_SUB=	GRASS_INST_DIR="${GRASS_INST_DIR}" \
 
 BROKEN_sparc64=		Does not configure on sparc64
 
-OPTIONS_DEFINE=		ATLAS FFMPEG MOTIF
+OPTIONS_DEFINE=		ATLAS LAS MOTIF NETCDF PDAL
 OPTIONS_MULTI=		DB
 OPTIONS_MULTI_DB=	MYSQL ODBC PGSQL SQLITE
-OPTIONS_DEFAULT=	MOTIF SQLITE
+OPTIONS_DEFAULT=	LAS PDAL PGSQL SQLITE
 OPTIONS_SUB=		yes
 
 ATLAS_DESC=		Use ATLAS for BLAS and LAPACK
+LAS_DESC=		Enable LiDAR modules
+PDAL_DESC=		Enable points cloud data modules
 ATLAS_USES=		blaslapack:atlas
 ATLAS_USES_OFF=		blaslapack
 DB_DESC=		Database support
-FFMPEG_LIB_DEPENDS=	libavcodec.so:multimedia/ffmpeg
-FFMPEG_CONFIGURE_ON=	--with-ffmpeg \
-			--with-ffmpeg-includes="${LOCALBASE}/include/libavcodec \
-			 ${LOCALBASE}/include/libavformat \
-			 ${LOCALBASE}/include/libavutil \
-			 ${LOCALBASE}/include/libswscale" \
-			--with-ffmpeglibs=${LOCALBASE}/lib
+LAS_CONFIGURE_ON=	--with-liblas=yes
+LAS_LIB_DEPENDS=	liblas.so:devel/liblas \
+					libboost_program_options.so:devel/boost-libs \
+					libboost_thread.so:devel/boost-libs \
+					libgeotiff.so:graphics/libgeotiff
 MOTIF_USES=		motif
 MOTIF_USE=		GL=glw
 MOTIF_CONFIGURE_ON=	--with-motif --with-glw
@@ -94,8 +101,12 @@ MYSQL_USE=		MYSQL=yes
 MYSQL_CONFIGURE_ON=	--with-mysql \
 			--with-mysql-includes=${LOCALBASE}/include/mysql \
 			--with-mysql-libs=${LOCALBASE}/lib/mysql
+NETCDF_CONFIGURE_ON=	--with-netcdf=${LOCALBASE}/bin/nc-config
+NETCDF_LIB_DEPENDS=	libnetcdf.so:science/netcdf
 ODBC_LIB_DEPENDS=	libodbc.so:databases/unixODBC
 ODBC_CONFIGURE_ON=	--with-odbc
+PDAL_CONFIGURE_ON=	--with-pdal=${LOCALBASE}/bin/pdal-config
+PDAL_LIB_DEPENDS=	libpdal_base.so:math/pdal
 PGSQL_USES=		pgsql
 PGSQL_CONFIGURE_ON=	--with-postgres
 SQLITE_USES=		sqlite
